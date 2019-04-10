@@ -151,8 +151,7 @@ class MusicGenre(db.Model):
         """displays the ids of music genres and music genres
         Can be cross-referenced with the interests table"""
 
-        return'<music_genre_id={}, music_genre_name={}>'.format(self.music_genre_id,
-                                                            self.music_genre_name)
+        return'<music_genre_id={}, music_genre_name={}>'.format(self.music_genre_id, self.music_genre_name)
 
 
 class FavCuisine(db.Model):

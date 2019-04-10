@@ -92,7 +92,7 @@ def all_book_genres():
     for book in book_genres:
         books.append((book.book_genre_id, book.book_genre_name))
 
-    return ["Favourite book genre", books]
+    return ["Favorite book genre", books]
 
 
 def all_movie_genres():
@@ -105,7 +105,7 @@ def all_movie_genres():
     for movie in movie_genres:
         movies.append((movie.movie_genre_id, movie.movie_genre_name))
 
-    return ["Favourite movie genre", movies]
+    return ["Favorite movie genre", movies]
 
 
 def all_music_genres():
@@ -119,7 +119,7 @@ def all_music_genres():
         music.append((music_genre.music_genre_id,
                          music_genre.music_genre_name))
 
-    return ["Favourite music genre", music]
+    return ["Favorite music genre", music]
 
 def all_fav_cuisines():
     """ Queries the fav_cuisines table. Returns a list of tuples, first element is the cuisine id and second

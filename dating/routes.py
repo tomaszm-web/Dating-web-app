@@ -139,10 +139,10 @@ def edit_profile():
 def add_interests():
     #form = InterestForm()
     all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
-    all_religions(),all_outdoors()]
+    all_religions(),all_outdoors()] #list of the different interests #functions from queries.py
 
     user_id = current_user.id
-    book_genre_id = request.form.get("Preferred book genre")
+    book_genre_id = request.form.get("Preferred book genre")  #accesses the dictionary to get posted form data
     movie_genre_id = request.form.get("Preferred movie genre")
     music_genre_id = request.form.get("Preferred music genre")
     fav_cuisine_id = request.form.get('Preferred cuisine type')
