@@ -11,7 +11,7 @@ def load_user(id):
 #configure a user loader function that can be called to load a user given the ID.
 #The user loader is registered with Flask-Login with the @login.user_loader decorator.
 
-class User(db.Model, UserMixin):  #This class defines several fields as class variables.
+class User(db.Model, flask_login.UserMixin):  #This class defines several fields as class variables.
     """ User of the Dating website."""
 
     __tablename__ = 'users'

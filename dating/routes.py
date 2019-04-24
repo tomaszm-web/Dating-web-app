@@ -72,8 +72,10 @@ def register():
         db.session.add(user)
         db.session.commit()
 
+        flask_login.login_user(user)
+
         flash('Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('add_interests'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -198,7 +200,6 @@ def edit_profile():
     return render_template('profileform.html', title='Edit Profile', form=form, image_file=image_file)
 
 @app.route('/add_interests', methods=['GET', 'POST'])
-@login_required
 def add_interests():
     #form = InterestForm()
     all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
@@ -230,7 +231,7 @@ def add_interests():
 
         db.session.add(interest)
         db.session.commit()
-        return redirect(url_for('account'))
+        return redirect(url_for('login'))
     else:
         flash("You already have interests, you can update them!")
 
@@ -239,26 +240,36 @@ def add_interests():
 @app.route('/edit_interests', methods=['GET', 'POST'])
 @login_required
 def edit_interests():
-    form = EditProfileForm()
-    if form.validate_on_submit():
-        if form.profilepic.data:
-            picture_file = save_picture(form.profilepic.data)
-            current_user.image_file = picture_file
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        current_user.city = form.city.data
-        current_user.phone = form.phone.data
+
+    all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
+    all_religions(),all_outdoors()]
+
+    user_id = current_user.id
+    book_genre_id = request.form.get("Favorite book genre")
+    movie_genre_id = request.form.get("Favorite movie genre")
+    music_genre_id = request.form.get("Favorite music genre")
+    fav_cuisine_id = request.form.get('Preferred cuisine type')
+    hobby_id = request.form.get('Favorite hobby')
+    outdoor_id = request.form.get('Favorite Outdoor activity')
+    religion_id = request.form.get('Religion')
+
+    user_interest = Interest.query.filter_by(interest_id=user_id).first()
+
+    if request.method == 'POST':
+        #find the user interest corresponding to the user_id
+        #edit that interest
+        user_interest.book_genre_id = book_genre_id
+        user_interest.movie_genre_id = movie_genre_id
+        user_interest.music_genre_id = music_genre_id
+        user_interest.fav_cuisine_id = fav_cuisine_id
+        user_interest.hobby_id = hobby_id
+        user_interest.outdoor_id = outdoor_id
+        user_interest.religion_id = religion_id
+
         db.session.commit()
-        flash('Your changes have been saved.')
         return redirect(url_for('account'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.city.data = current_user.city
-        form.phone.data = current_user.phone
-        flash('Your photo has been uploaded! It is now your profile pic', 'success')
-    image_file = url_for('static', filename='profilepics/' + current_user.image_file)
-    return render_template('edit_interests.html', title='Edit Interests')
+
+    return render_template('editinterests.html', title='Edit Interests', all_interests=all_interests)
 
 
 @app.route('/generate_matches', methods=["GET"])
