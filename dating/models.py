@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.String(100), nullable=False)
-    city = db.Column(db.String(100), nullable=False)
+    zipcode = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
     #profile_picture = db.Column(db.String(250), default = 'default.jpg', nullable=True)
