@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, current_app, jsonify
 from dating import app, db, bcrypt
-from dating.forms import RegistrationForm, LoginForm, EditProfileForm, MessageForm
+from dating.forms import *
 from dating.models import *
 from flask_login import login_user, current_user, logout_user, login_required
 from dating.queries import *
@@ -74,15 +74,19 @@ def register():
                 zipcode=form.zipcode.data, phone=form.phone.data)
         db.session.add(user)
         db.session.commit()
+        print("hello")
+        print(user.id)
 
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:  #checks if user is logged in
         return redirect(url_for('home'))    #redirect to the home page
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()  #The result of filter_by() is a query that only includes the objects that have a matching username. complete query by calling first(), returns the user object if it exists,None if it does not.
@@ -93,6 +97,7 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
 
 @app.route("/logout")
 def logout():
@@ -106,31 +111,31 @@ def account():
 
     selected_interests = []
 
-    user_interests = Interest.query.filter_by(interest_id=current_user.id).first()
+    user_interests = Interest.query.filter_by(interest_id=current_user.id).first() #this gets the interests of the user
 
-    user_book_genre_id = user_interests.book_genre_id
-    user_movie_genre_id = user_interests.movie_genre_id
-    user_music_genre_id = user_interests.music_genre_id
-    user_fav_cuisine_id = user_interests.fav_cuisine_id
-    user_hobby_id = user_interests.hobby_id
-    user_outdoor_id = user_interests.outdoor_id
-    user_religion_id = user_interests.religion_id
+    user_book_genre_id = user_interests.book_genre_id       #preferred book genre id of user
+    user_movie_genre_id = user_interests.movie_genre_id     #preferred movie genre id of user
+    user_music_genre_id = user_interests.music_genre_id     #preferred music genre id of user
+    user_fav_cuisine_id = user_interests.fav_cuisine_id     #preferred fav cuisine id of user
+    user_hobby_id = user_interests.hobby_id                 #preferred hobby id of user
+    user_outdoor_id = user_interests.outdoor_id             #preferred outdoor id of user
+    user_religion_id = user_interests.religion_id           #preferred religion id of user
 
-    bookname = BookGenre.query.filter_by(book_genre_id=user_book_genre_id).first()
-    moviename = MovieGenre.query.filter_by(movie_genre_id=user_movie_genre_id).first()
-    musicname = MusicGenre.query.filter_by(music_genre_id=user_music_genre_id).first()
-    cuisinename = FavCuisine.query.filter_by(fav_cuisine_id=user_fav_cuisine_id).first()
-    hobbyname = Hobby.query.filter_by(hobby_id=user_hobby_id).first()
-    outdoorname = Outdoor.query.filter_by(outdoor_id=user_outdoor_id).first()
-    religionname = Religion.query.filter_by(religion_id=user_religion_id).first()
+    bookname = BookGenre.query.filter_by(book_genre_id=user_book_genre_id).first()      #queries the BookGenre table via the id
+    moviename = MovieGenre.query.filter_by(movie_genre_id=user_movie_genre_id).first()  #queries the MovieGenre table via the id
+    musicname = MusicGenre.query.filter_by(music_genre_id=user_music_genre_id).first()  #queries the MusicGenre table via the id
+    cuisinename = FavCuisine.query.filter_by(fav_cuisine_id=user_fav_cuisine_id).first()#queries the FavCuisine table via the id
+    hobbyname = Hobby.query.filter_by(hobby_id=user_hobby_id).first()                   #queries the Hobby table via the id
+    outdoorname = Outdoor.query.filter_by(outdoor_id=user_outdoor_id).first()           #queries the Outdoor table via the id
+    religionname = Religion.query.filter_by(religion_id=user_religion_id).first()       #queries the Religion table via the id
 
-    selected_interests.append(bookname.book_genre_name)
-    selected_interests.append(moviename.movie_genre_name)
-    selected_interests.append(musicname.music_genre_name)
-    selected_interests.append(cuisinename.fav_cuisine_name)
-    selected_interests.append(hobbyname.hobby_name)
-    selected_interests.append(outdoorname.outdoor_activity)
-    selected_interests.append(religionname.religion_name)
+    selected_interests.append(bookname.book_genre_name)     #Adds the book_genre_name to the selected_interests list
+    selected_interests.append(moviename.movie_genre_name)   #Adds the movie_genre_name to the selected_interests list
+    selected_interests.append(musicname.music_genre_name)   #Adds the music_genre_name to the selected_interests list
+    selected_interests.append(cuisinename.fav_cuisine_name) #Adds the fav_cuisine_name to the selected_interests list
+    selected_interests.append(hobbyname.hobby_name)         #Adds the hobby_name to the selected_interests list
+    selected_interests.append(outdoorname.outdoor_activity) #Adds the outdoor_activity to the selected_interests list
+    selected_interests.append(religionname.religion_name)   #Adds the religion_name to the selected_interests list
 
     return render_template('account.html', title='Account', selected_interests=selected_interests)
 
@@ -171,8 +176,9 @@ def profile(user):
     selected_interests.append(outdoorname.outdoor_activity)
     selected_interests.append(religionname.religion_name)
 
-
     return render_template('profile.html', selected_user=selected_user, user=user, selected_interests=selected_interests)
+
+#selected_interests=Interest.query.filter_by(interest_id=current_user.id).first()
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -199,7 +205,6 @@ def edit_profile():
     return render_template('profileform.html', title='Edit Profile', form=form, image_file=image_file)
 
 @app.route('/add_interests', methods=['GET', 'POST'])
-@login_required
 def add_interests():
     #form = InterestForm()
     all_interests = [all_book_genres(), all_movie_genres(),all_music_genres(),all_fav_cuisines(),all_hobbies(),
@@ -214,7 +219,9 @@ def add_interests():
     outdoor_id = request.form.get('Favorite Outdoor activity')
     religion_id = request.form.get('Religion')
 
-    if request.method == 'POST':
+    exist = db.session.query(db.exists().where(User.id == user_id)).scalar()
+
+    if request.method == 'POST' and exist==False:
           #add user interests for the specific user
         interest = Interest(
             user_id=user_id,
@@ -230,7 +237,8 @@ def add_interests():
         db.session.add(interest)
         db.session.commit()
         return redirect(url_for('account'))
-
+    else:
+        flash("You already have interests, you can update them!")
 
     return render_template('interestform.html', title='Add Interests', all_interests=all_interests)
 
@@ -273,7 +281,6 @@ def edit_interests():
 def show_generate_matches_form():
     """Route for users to enter their zipcode and a time for meeting up!!.
     """
-
     return render_template("generate_matches.html")
 
 @app.route('/generate_matches', methods=["POST"])
@@ -293,6 +300,7 @@ def generate_matches():
     session['query_time'] = session_time
 
     date_out = datetime.datetime(*[int(v) for v in query_time.replace('T', '-').replace(':', '-').split('-')])
+
 
     trip =  PendingMatch(user_id=user_id,
                         query_pin_code=query_pin_code,
