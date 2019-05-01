@@ -30,19 +30,13 @@ class User(db.Model, UserMixin):  #This class defines several fields as class va
     zipcode = db.Column(db.String(15), nullable=False)
     phone = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(20), nullable=True, default='default.jpg')
-    messages_sent = db.relationship('Message',
-                                    foreign_keys='Message.sender_id',
-                                    backref='sender', lazy='dynamic')
-    messages_received = db.relationship('Message',
-                                        foreign_keys='Message.recipient_id',
-                                        backref='recipient', lazy='dynamic')
 
+    messages_sent = db.relationship('Message',foreign_keys='Message.sender_id', backref='sender', lazy='dynamic')
+    messages_received = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient', lazy='dynamic')
     last_message_read_time = db.Column(db.DateTime)
-    notifications = db.relationship('Notification', backref='user',
-                                    lazy='dynamic')
-    #profile_picture = db.Column(db.String(250), default = 'default.jpg', nullable=True)
+    notifications = db.relationship('Notification', backref='user',lazy='dynamic')
+    
     interest = db.relationship('Interest', backref=db.backref('User'))
-
 
     def _repr_(self): #The __repr__ method tells Python how to print objects of this class
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
